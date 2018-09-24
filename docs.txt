@@ -1,0 +1,3 @@
+https://www.learnopencv.com/install-dlib-on-ubuntu/
+
+https://hackernoon.com/face-recognition-service-with-python-dlib-flask-ca33d335fa26

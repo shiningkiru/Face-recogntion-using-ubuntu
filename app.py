@@ -52,6 +52,10 @@ def homepage():
     return render_template('index.html', users = users)
 
 
+@app.route('/profile/<int:user_id>')
+def profile(user_id):
+    return render_template('profile.html')
+
 
 @app.route('/api/train', methods=['POST'])
 def train():
