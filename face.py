@@ -41,17 +41,19 @@ class Face:
             self.faces.append(face)
 
             face_image = face_recognition.load_image_file(self.load_train_file_by_name(filename))
-            face_image_encoding = face_recognition.face_encodings(face_image)[0]
-            index_key = len(self.known_encoding_faces)
-            self.known_encoding_faces.append(face_image_encoding)
-            index_key_string = str(index_key)
-            self.face_user_keys['{0}'.format(index_key_string)] =user_id
+            face_image_encoding = face_recognition.face_encodings(face_image)
+            if len(face_image_encoding) > 0 :
+                face_image_encoding = face_image_encoding[0]
+                index_key = len(self.known_encoding_faces)
+                self.known_encoding_faces.append(face_image_encoding)
+                index_key_string = str(index_key)
+                self.face_user_keys['{0}'.format(index_key_string)] =user_id
 
     def recognize(self,filename):
         unknown_image = face_recognition.load_image_file(self.load_unknown_file_by_name(filename))
         unknown_encoding_image = face_recognition.face_encodings(unknown_image)[0]
         result = face_recognition.compare_faces(self.known_encoding_faces, unknown_encoding_image)
-        print(result)
+
         index_key = 0
         for matched in result:
             if matched:

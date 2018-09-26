@@ -18,15 +18,15 @@
 </head>
 <body>
 
-<div class="wrapper">
-    <div class="text-center">
-        <h2>Face recognition platform</h2>
+    <div class="wrapper">
+        <div class="text-center">
+            <h2>Face recognition R&D</h2>
+        </div>
+        {% include 'properties/header.html' %}
+
+        {% block content %}{% endblock %}
+
     </div>
-    {% include 'properties/header.html' %}
-
-    {% block content %}{% endblock %}
-
-</div>
-
+    {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,19 @@
+.image-box{
+    height: 250px;
+    overflow: hidden;
+}
+
+.image{
+    width: 100%;
+}
+
+.btn-delete{
+    position:absolute;
+    top:0;
+    right: 15px;
+    opacity: 0;
+}
+
+.image-box:hover .btn-delete{
+    opacity: 1;
+}

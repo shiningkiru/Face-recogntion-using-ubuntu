@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container" id="reco-app">
+    <h3 class="text-center mt-3">Recognize user</h3>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="">Select Image</label>
+                <input type="file" class="form-control" v-on:change="fileProcess($event)" id="file-input">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-secondary float-right" :disabled="train_rec" v-on:click="recognizeImage()">Recognize</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <table class="table" v-if="user.id">
+                <tbody>
+                    <tr>
+                        <td>User ID</td>
+                        <td><% user.id %></td>
+                    </tr>
+                    <tr>
+                        <td>Name</td>
+                        <td><% user.name %></td>
+                    </tr>
+                    <tr>
+                        <td>Action</td>
+                        <td>
+                            <a v-bind:href="'/profile/'+user.id">
+                                <button type="button" class="btn btn-primary btn-sm">view</button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+
+new Vue({
+  el: '#reco-app',
+  data: {
+    user: {
+        id: '',
+        name: ''
+    },
+    face_to_rec: null,
+    train_rec: true,
+  },
+  methods: {
+    fileProcess: function(event){
+        this.face_to_rec = event.target.files[0];
+        this.train_rec=false;
+        this.user={
+        id: '',
+        name: '',
+        }
+    },
+    recognizeImage: function(){
+        if(this.face_to_rec == null || this.face_to_rec == undefined)return false;
+        let formData = new FormData();
+        formData.append('file', this.face_to_rec);
+
+        this.$http.post('/api/recognize', formData).then(function(response) {
+          /*  $('#file-input').val('');
+            this.train_rec=true;
+            this.face_to_rec=null;*/
+            let fuser = response.data.found;
+            this.user = {
+                id: fuser.id,
+                name: fuser.name
+            };
+            console.log(response.data)
+         }, function(error){
+            alert("Could'n match any user");
+         });
+    }
+  },
+  delimiters : ['<%', '%>']
+})
+
+
+</script>
+{% endblock %}

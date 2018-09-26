@@ -1,3 +1,122 @@
 {% extends "base.html" %}
 {% block content %}
+
+<div class="container" id="profile-app">
+    <h3 class="text-center mt-3">User profile</h3>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>User ID</td>
+                <td>{{ user.id }}</td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>{{ user.name }}</td>
+            </tr>
+            <tr>
+                <td>Created At</td>
+                <td>{{ user.created }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4 class="mt-3">
+        Trained Faces
+        <button class="btn btn-info btn-sm float-right"  data-toggle="modal" data-target="#train-face">Train Face</button>
+    </h4>
+    <div class="row">
+        <div v-for="face in faces" class="col-md-4 col-sm-6 image-box">
+            <img v-bind:src="'/static/storage/trained/' + face.filename" alt="123" class="image">
+            <button class="btn btn-danger btn-sm btn-delete" v-on:click="deleteFace(face.id)">X</button>
+        </div>
+    </div>
+
+
+
+    <!-- The Modal -->
+    <div class="modal" id="train-face">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Face training</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+              <p class="text-warning">Train your face with different angle</p>
+              <div class="clearfix"></div>
+              <div class="form-group">
+                  <label for="">Select face image</label>
+                  <input type="file" class="form-control" v-on:change="fileProcess($event)" id="file-input">
+              </div>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" :disabled="train_button" v-on:click="trainImage()">Train Now</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- modal end -->
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+new Vue({
+  el: '#profile-app',
+  data: {
+    user_id: {{ user.id }},
+    faces: [],
+    face_to_train: null,
+    train_button: true,
+  },
+  mounted: function(){
+    this.getUser();
+  },
+  methods: {
+    getUser: function(){
+        this.$http.get('/api/profile/'+this.user_id).then(function(response) {
+            this.faces = response.data.faces;
+         });
+    },
+    fileProcess: function(event){
+        this.face_to_train = event.target.files[0];
+        this.train_button=false;
+    },
+    trainImage: function(){
+        if(this.face_to_train == null || this.face_to_train == undefined)return false;
+        let formData = new FormData();
+        formData.append('file', this.face_to_train);
+        formData.append('user_id', this.user_id);
+
+        this.$http.post('/api/train', formData).then(function(response) {
+            $('#file-input').val('');
+            this.train_button=true;
+            this.face_to_train=null;
+            this.getUser();
+            alert("Trained successfully");
+         });
+    },
+    deleteFace: function(face_id){
+        this.$http.get('/api/delete-face/'+face_id).then(function(response) {
+            this.getUser();
+         });
+    }
+  },
+  delimiters : ['<%', '%>']
+})
+
+
+</script>
+
 {% endblock %}
